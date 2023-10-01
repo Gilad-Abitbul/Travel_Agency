@@ -1,0 +1,514 @@
+﻿@model Project___Intro_To_Computer_Networking.ViewModel.cls_flightVM
+
+@{
+    ViewBag.Title = "home_page";
+}
+
+@*
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <meta name="viewport" content="width=device-width" />
+        <title>HomePage</title>
+        <style>
+            .TWcontainer {
+                margin: 10px;
+                padding: 10px;
+                border-radius: 10px;
+                border-color: black;
+                border-style: solid;
+                display: block;
+                grid-template-rows: 1fr, 1fr;
+                transition: background-color 0.20s;
+                max-width: 1000px;
+            }
+            .TWflight {
+                font-size: 16px;
+                margin: 10px;
+                padding: 0;
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                transition: background-color 0.20s;
+                max-width: 1200px;
+            }
+            .origin {
+                margin: 10px;
+                padding: 10px;
+                width: 500px;
+                max-height: 300px;
+                border-radius: 10px;
+                border-color: black;
+                border-style: solid;
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                transition: background-color 0.20s;
+            }
+
+                .origin:hover {
+                    margin: 20px;
+                    background-color: rgb(0, 208, 255, 0.35);
+                }
+
+            h1 {
+                font-family: Roboto, Arial;
+            }
+            .container {
+                display: grid;
+                grid-template-columns: 1fr, 3fr, 1fr;
+            }
+        </style>
+        <script>
+            window.onload = function () {
+
+                var one_way = document.getElementById('RB_OneWay');
+                var two_way = document.getElementById('RB_TwoWay');
+                one_way.onclick = ONE_WAY;
+                two_way.onclick = TWO_WAY;
+                ONE_WAY();
+            }
+
+            function ONE_WAY() {
+                document.getElementById('DT_ReturnDate').style.display = "none";
+                two_way.checked = false;
+            }
+
+            function TWO_WAY() {
+                document.getElementById('DT_ReturnDate').style.display = "block";
+                one_way.checked = false;
+            }
+        </script>
+    </head>
+    <body>
+        @{
+            Project___Intro_To_Computer_Networking.Models.cls_user current_user = (Project___Intro_To_Computer_Networking.Models.cls_user)Session["currentUser"];
+        }
+
+        @{
+            if (current_user == null)
+            {
+                <a href=@Url.Action("sign_in", "authenticate")>SIGN IN</a>
+                <a href=@Url.Action("sign_up", "authenticate")>SIGN UP</a>
+            }
+            else
+            {
+                <a href=@Url.Action("sign_out", "authenticate")>SIGN OUT</a>
+            }
+        }
+        <a href=@Url.Action("check_out", "order")>check Out</a>
+
+        <form action="/filter/SearchFlight" method="post" class="trip-form">
+            <fieldset class="radio-group">
+                <label for="one-way" class="bold-type">
+                    <input type="radio" id="RB_OneWay" name="trip-type" value="one_way" checked />
+                    One Way
+                </label>
+                <label for="two-way" class="bold-type">
+                    <input type="radio" id="RB_TwoWay" name="trip-type" value="two_way" />
+                    Two Way
+                </label>
+            </fieldset>
+
+            <fieldset>
+                <div class="group-field ">
+                    <label for="from" class="bold-type">From </label>
+                    <input class="from-place" type="text" name="SV_DepartureCountry" maxlength="100" placeholder="Any world wide city or airport">
+                </div>
+                <div class="group-field">
+                    <label for="to" class="bold-type">To </label>
+                    <input class="to-place" type="text" name="SV_DestinationCountry" maxlength="100" placeholder="Any world wide city or airport">
+                </div>
+                <div class="group-field">
+                    <label for="depart" class="bold-type">Depart on</label>
+                    <input placeholder="Pick a date" type="date" name="SV_DepartureDate" />
+                </div>
+                <div class="group-field" id="DT_ReturnDate">
+                    <label for="return" class="bold-type">Return on</label>
+                    <input placeholder="Pick a date" type="date" name="SV_ReturnDate" />
+                </div>
+            </fieldset>
+            <fieldset>
+                <input class="search-btn" type="submit" value="Search flights" />
+            </fieldset>
+        </form>
+        @if (TempData["make-order-message"] != null)
+        {
+            <h6 style="color:@TempData["make-order-message-color"].ToString()">@TempData["make-order-message"]</h6>
+        }
+
+        <br />
+
+        @{
+            if (current_user != null)
+            {
+                <div>
+                    <h5>Welcome @current_user.firstName</h5>
+                </div>
+            }
+        }
+    <div class="container">
+        <div>
+
+        </div>
+        @{
+            if (Model.IsOneWayFlight())
+            {
+                Project___Intro_To_Computer_Networking.ViewModel.cls_oneWayFlightVM view_model = (Project___Intro_To_Computer_Networking.ViewModel.cls_oneWayFlightVM)Model;
+                foreach (Project___Intro_To_Computer_Networking.Models.cls_flight flight in view_model.flights)
+                {
+                    <div class="origin">
+                        <div style="display:inline">
+                            <h1>FROM:</h1>
+                            <h3>@flight.departure_country</h3>
+                            <h3>@flight.departure_airport</h3>
+                            <h3>@flight.departure_time.ToString("G")</h3>
+                        </div>
+                        <div style="display: inline">
+                            <h1>TO:</h1>
+                            <h3>@flight.landing_country</h3>
+                            <h3>@flight.landing_airport</h3>
+                        </div>
+                        <a href=@Url.Action("details", "home", new { pk = flight.flight_identifier})>MORE DETAILS</a>
+                        <div value="@flight.flight_identifier"> @flight.flight_identifier </div>
+                        @{
+                            if (current_user != null && current_user.is_admin)
+                            {
+                                <a href=@Url.Action("remove", "flight", new { pk = flight.flight_identifier})>REMOVE</a>
+                            }
+                        }
+                    </div>
+                }
+            }
+            else
+            {
+                Project___Intro_To_Computer_Networking.ViewModel.cls_twoWayFlightVM view_model = (Project___Intro_To_Computer_Networking.ViewModel.cls_twoWayFlightVM)Model;
+                foreach (Project___Intro_To_Computer_Networking.Models.cls_twoWayFlight flight in view_model.flights)
+                {
+    <div class="TWcontainer">
+        <div class="TWflight">
+            <div style="display:inline">
+                <h1>FROM:</h1>
+                <h3>@flight.DepartureFlight.departure_country</h3>
+                <h3>@flight.DepartureFlight.departure_airport</h3>
+                <h3>@flight.DepartureFlight.departure_time.ToString("G")</h3>
+            </div>
+            <div style="display: inline">
+                <h1>TO:</h1>
+                <h3>@flight.DepartureFlight.landing_country</h3>
+                <h3>@flight.DepartureFlight.landing_airport</h3>
+            </div>
+        </div>
+        <div class="TWflight">
+            <div style="display:inline">
+                <h1>FROM:</h1>
+                <h3>@flight.ReturnFlight.departure_country</h3>
+                <h3>@flight.ReturnFlight.departure_airport</h3>
+                <h3>@flight.ReturnFlight.departure_time.ToString("G")</h3>
+            </div>
+            <div style="display: inline">
+                <h1>TO:</h1>
+                <h3>@flight.ReturnFlight.landing_country</h3>
+                <h3>@flight.ReturnFlight.landing_airport</h3>
+            </div>
+        </div>
+        <a href=@Url.Action("details", "home", new { pk = flight.DepartureFlight.flight_identifier + "&" + flight.ReturnFlight.flight_identifier})>MORE DETAILS</a>
+    </div>
+                }
+            }
+        }
+        <div>
+
+        </div>
+    </div>
+
+    </body>
+    </html>*@
+
+
+@{
+    ViewBag.Title = "home_page";
+}
+
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>HomePage</title>
+    <link href="~/Styles/Search.css" rel="stylesheet" />
+    <style>
+        .TWcontainer {
+            margin: 10px;
+            padding: 10px;
+            border-radius: 10px;
+            border-color: black;
+            border-style: solid;
+            display: block;
+            grid-template-rows: 1fr, 1fr;
+            transition: background-color 0.20s;
+            max-width: 1000px;
+        }
+
+        .TWflight {
+            font-size: 16px;
+            margin: 10px;
+            padding: 0;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            transition: background-color 0.20s;
+            max-width: 1200px;
+        }
+
+        .origin {
+            margin: 10px;
+            padding: 10px;
+            width: 500px;
+            max-height: 300px;
+            border-radius: 10px;
+            border-color: black;
+            border-style: solid;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            transition: background-color 0.50s;
+        }
+
+            .origin:hover {
+                margin: 20px;
+                background-color: rgb(66,125,255,1);
+            }
+
+        h1 {
+            font-family: Roboto, Arial;
+        }
+
+        .container {
+            display: grid;
+            grid-template-columns: 1fr, 3fr, 1fr;
+        }
+    </style>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+        }
+
+        /* Style the header */
+        .header {
+            background-color: #ff01f1;
+            padding: 20px;
+            text-align: center;
+        }
+
+        /* Style the top navigation bar */
+        .topnav {
+            overflow: hidden;
+            background-color: #3303;
+        }
+
+            /* Style the topnav links */
+            .topnav a {
+                float: left;
+                display: block;
+                color: white;
+                font-weight: bold;
+                text-align: center;
+                padding: 14px 16px;
+                text-decoration: none;
+            }
+
+                /* Change color on hover */
+                .topnav a:hover {
+                    background-color: #2f7cff;
+                    color: black;
+                }
+
+        .search-btn {
+            float: right;
+            padding: 10px 22px;
+            border-radius: 6px;
+            outline: none;
+            font-weight: bold;
+            background: #2f7cff;
+            color: white;
+            border: none;
+            margin-top: 0px;
+        }
+    </style>
+    <script>
+        window.onload = function () {
+
+            var one_way = document.getElementById('RB_OneWay');
+            var two_way = document.getElementById('RB_TwoWay');
+            one_way.onclick = ONE_WAY;
+            two_way.onclick = TWO_WAY;
+            ONE_WAY();
+        }
+
+        function ONE_WAY() {
+            document.getElementById('DT_ReturnDate').style.display = "none";
+            two_way.checked = false;
+        }
+
+        function TWO_WAY() {
+            document.getElementById('DT_ReturnDate').style.display = "block";
+            one_way.checked = false;
+        }
+    </script>
+</head>
+
+
+
+
+
+<body style="background-color:whitesmoke; padding: 100px; text-align: center; margin: 35px;">
+
+    @{
+        Project___Intro_To_Computer_Networking.Models.cls_user current_user = (Project___Intro_To_Computer_Networking.Models.cls_user)Session["currentUser"];
+    }
+    <div class="topnav">
+        @{
+            if (current_user == null)
+            {
+                <a href=@Url.Action("sign_in", "authenticate")>SIGN IN</a>
+                <a href=@Url.Action("sign_up", "authenticate")>SIGN UP</a>
+            }
+            else
+            {
+                <a href=@Url.Action("sign_out", "authenticate")>SIGN OUT</a>
+            }
+        }
+        <a href=@Url.Action("check_out", "order")>CHECK OUT</a>
+    </div>
+
+
+
+    <form action="/filter/SearchFlight" method="post" class="trip-form">
+        <fieldset class="radio-group">
+            <label for="one-way" class="bold-type">
+                <input type="radio" id="RB_OneWay" name="trip-type" value="one_way" checked />
+                One Way
+            </label>
+            <label for="two-way" class="bold-type">
+                <input type="radio" id="RB_TwoWay" name="trip-type" value="two_way" />
+                Two Way
+            </label>
+        </fieldset>
+
+        <fieldset>
+            <div class="group-field ">
+                <label for="from" class="bold-type">From </label>
+                <input class="from-place" type="text" name="SV_DepartureCountry" maxlength="100" placeholder="Any world wide city or airport">
+            </div>
+            <div class="group-field">
+                <label for="to" class="bold-type">To </label>
+                <input class="to-place" type="text" name="SV_DestinationCountry" maxlength="100" placeholder="Any world wide city or airport">
+            </div>
+            <div class="group-field">
+                <label for="depart" class="bold-type">Depart on</label>
+                <input placeholder="Pick a date" type="date" name="SV_DepartureDate" />
+            </div>
+            <div class="group-field" id="DT_ReturnDate">
+                <label for="return" class="bold-type">Return on</label>
+                <input placeholder="Pick a date" type="date" name="SV_ReturnDate" />
+            </div>
+        </fieldset>
+        <fieldset>
+            <input class="search-btn" type="submit" value="Search flights" />
+        </fieldset>
+    </form>
+    @if (TempData["make-order-message"] != null)
+    {
+        <h6 style="color:@TempData["make-order-message-color"].ToString()">@TempData["make-order-message"]</h6>
+    }
+
+    <br />
+
+    @{
+        if (current_user != null)
+        {
+            <div>
+                <h5>Welcome @current_user.firstName</h5>
+            </div>
+        }
+    }
+    <div class="container">
+        <div>
+
+        </div>
+        @{
+            if (Model.IsOneWayFlight())
+            {
+                Project___Intro_To_Computer_Networking.ViewModel.cls_oneWayFlightVM view_model = (Project___Intro_To_Computer_Networking.ViewModel.cls_oneWayFlightVM)Model;
+                foreach (Project___Intro_To_Computer_Networking.Models.cls_flight flight in view_model.flights)
+                {
+                    <div class="origin">
+                        <div style="display:inline">
+                            <h1>FROM:</h1>
+                            <h3>@flight.departure_country</h3>
+                            <h3>@flight.departure_airport</h3>
+                            <h3>@flight.departure_time.ToString("g")</h3>
+                        </div>
+                        <div style="display: inline">
+                            <h1>TO:</h1>
+                            <h3>@flight.landing_country</h3>
+                            <h3>@flight.landing_airport</h3>
+                        </div>
+                        <a href=@Url.Action("details", "home", new { pk = flight.flight_identifier})>MORE DETAILS</a>
+                        <div value="@flight.flight_identifier"> @flight.flight_identifier </div>
+                        @{
+                            if (current_user != null && current_user.is_admin)
+                            {
+                                <a href=@Url.Action("remove", "flight", new { pk = flight.flight_identifier})>REMOVE</a>
+                            }
+                        }
+                    </div>
+                }
+            }
+            else
+            {
+                Project___Intro_To_Computer_Networking.ViewModel.cls_twoWayFlightVM view_model = (Project___Intro_To_Computer_Networking.ViewModel.cls_twoWayFlightVM)Model;
+                foreach (Project___Intro_To_Computer_Networking.Models.cls_twoWayFlight flight in view_model.flights)
+                {
+                    <div class="TWcontainer">
+                        <div class="TWflight">
+                            <div style="display:inline">
+                                <h1>FROM:</h1>
+                                <h3>@flight.DepartureFlight.departure_country</h3>
+                                <h3>@flight.DepartureFlight.departure_airport</h3>
+                                <h3>@flight.DepartureFlight.departure_time.ToString("g")</h3>
+                            </div>
+                            <div style="display: inline">
+                                <h1>TO:</h1>
+                                <h3>@flight.DepartureFlight.landing_country</h3>
+                                <h3>@flight.DepartureFlight.landing_airport</h3>
+                            </div>
+                        </div>
+                        <div class="TWflight">
+                            <div style="display:inline">
+                                <h1>FROM:</h1>
+                                <h3>@flight.ReturnFlight.departure_country</h3>
+                                <h3>@flight.ReturnFlight.departure_airport</h3>
+                                <h3>@flight.ReturnFlight.departure_time.ToString("g")</h3>
+                            </div>
+                            <div style="display: inline">
+                                <h1>TO:</h1>
+                                <h3>@flight.ReturnFlight.landing_country</h3>
+                                <h3>@flight.ReturnFlight.landing_airport</h3>
+                            </div>
+                        </div>
+                        <a href=@Url.Action("details", "home", new { pk = flight.DepartureFlight.flight_identifier + "&" + flight.ReturnFlight.flight_identifier})>MORE DETAILS</a>
+                    </div>
+                }
+            }
+        }
+        <div>
+
+        </div>
+    </div>
+
+</body>
+</html>

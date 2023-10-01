@@ -1,0 +1,363 @@
+﻿@{
+
+    ViewBag.Title = "check_out";
+}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Payment</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="https://fonts.googleapis.com/css?family=Montserrat" rel="stylesheet">
+    <link rel="stylesheet" href="~/Styles/payment.css">
+    <link rel="stylesheet" href="~/Styles/boots.css">
+    <script src="~/Scripts/jquery-3.4.1.js"></script>
+    <script src="~/Scripts/jquery.validate.js"></script>
+    <script src="~/Scripts/jquery.validate.unobtrusive.js"></script>
+</head>
+<body>
+    @{ Project___Intro_To_Computer_Networking.Models.cls_bug current_bug = (Project___Intro_To_Computer_Networking.Models.cls_bug)Session["BUG"]; }
+
+    <main class="page payment-page">
+        <section class="payment-form dark">
+            <div class="container">
+                <div class="block-heading">
+                    <h2>Payment</h2>
+                    <p>
+                        Don't worry it's just a simulation and we won't charge you!
+                    </p>
+                </div>
+                @{
+                    if (current_bug == null || current_bug.user_orders.Count == 0)
+                    {
+                        <p>
+                            Your Cart Is Empty...<br />
+                            <a href=@Url.Action("index", "home")>Go to the home page</a>
+                        </p>
+                    }
+                    else
+                    {
+                        <form action="/order/make_payment/" method="post" autocomplete="off">
+                                    <div class="products">
+                                        <h3 class="title">
+                                            Checkout
+                                        </h3>
+                                        @foreach (Project___Intro_To_Computer_Networking.Models.cls_order order in current_bug.user_orders)
+                                        {
+                                            if (order.economy_seats != 0)
+                                            {
+                                                <div class="item">
+                                                    <span class="price">&#8362;@order.get_total_for_product("E")</span>
+                                                    <p class="item-name">Economy Class Seats:</p>
+                                                    <p class="item-description">
+                                                        FLIGHT: @order.current_flight.flight_identifier<br />
+                                                        FROM: @order.current_flight.departure_country\@order.current_flight.departure_airport<br />
+                                                        TO: @order.current_flight.landing_country\@order.current_flight.landing_airport<br />
+                                                        @order.current_flight.get_date()
+                                                    </p>
+                                                    <p class="item-description">@order.economy_seats X &#8362;@order.current_flight.economy_seat_price</p>
+                                                </div>
+                                            }
+                                            if (order.business_seats != 0)
+                                            {
+                                                <div class="item">
+                                                    <span class="price">&#8362;@order.get_total_for_product("B")</span>
+                                                    <p class="item-name">Business Class Seats:</p>
+                                                    <p class="item-description">
+                                                        FLIGHT: @order.current_flight.flight_identifier<br />
+                                                        FROM: @order.current_flight.departure_country\@order.current_flight.departure_airport<br />
+                                                        TO: @order.current_flight.landing_country\@order.current_flight.landing_airport<br />
+                                                        @order.current_flight.get_date()
+                                                    </p>
+                                                    <p class="item-description">@order.business_seats X &#8362;@order.current_flight.business_seat_price</p>
+                                                </div>
+                                            }
+                                            if (order.premium_seats != 0)
+                                            {
+                                                <div class="item">
+                                                    <span class="price">&#8362;@order.get_total_for_product("P")</span>
+                                                    <p class="item-name">Premium Class Seats:</p>
+                                                    <p class="item-description">
+                                                        FLIGHT: @order.current_flight.flight_identifier<br />
+                                                        FROM: @order.current_flight.departure_country\@order.current_flight.departure_airport<br />
+                                                        TO: @order.current_flight.landing_country\@order.current_flight.landing_airport<br />
+                                                        @order.current_flight.get_date()
+                                                    </p>
+                                                    <p class="item-description">@order.premium_seats X &#8362;@order.current_flight.premium_seat_price</p>
+                                                </div>
+                                            }
+                                        }
+
+                                        <div class="total">Total:<span class="price">&#8362;@current_bug.get_totalPrice()</span></div>
+                                    </div>
+
+                                    <div class="card-details">
+                                        <h3 class="title">
+                                            Passengers' Names (The name that appear on the tickets)
+                                        </h3>
+
+                                        @{
+                                            int index = 0;
+                                            string passenger_name = "";
+                                            foreach (Project___Intro_To_Computer_Networking.Models.cls_order order in current_bug.user_orders)
+                                            {
+                                                <div class="row" style="border-bottom: 3px dashed rgba(0,0,0,0.6); margin-bottom: 25px; position:relative;">
+                                                    <p>
+                                                        Enter information about the passengers on flight:<br />
+                                                        <span>
+                                                            FLIGHT: @order.current_flight.flight_identifier<br />
+                                                            FROM: @order.current_flight.departure_country\@order.current_flight.departure_airport<br />
+                                                            TO: @order.current_flight.landing_country\@order.current_flight.landing_airport<br />
+                                                            AT: @order.current_flight.departure_time.ToString("R")<br />
+                                                        </span>
+                                                    </p>
+                                                    @for (int i = 1; i <= order.economy_seats; i++)
+                                                    {
+                                                        passenger_name = @order.current_flight.flight_identifier + "-E#" + i;
+                                                        <div class="form-group col-sm-8">
+                                                            <label for="passenger-name">Economy Class seat #@i </label><br />
+                                                            <input id="card-number"
+                                                                   type="text"
+                                                                   class="form-control"
+                                                                   placeholder="Passenger Name"
+                                                                   name=@passenger_name
+                                                                   minlength="5"
+                                                                   maxlength="20"
+                                                                   required
+                                                                   pattern="^(?<firstchar>[A-Za-z])((?<alphachars>[A-Za-z])|(?<specialchars>[A-Za-z]['-][A-Za-z])|(?<spaces> [A-Za-z]))*$" 
+                                                                   title="
+                                                                   Invalid Person Name"/>
+                                                        </div>
+                                                    }
+                                                    @for (int i = 1; i <= order.business_seats; i++)
+                                                    {
+                                                        passenger_name = @order.current_flight.flight_identifier + "-B#" + i;
+                                                        <div class="form-group col-sm-8">
+                                                            <label for="passenger-name">Business Class seat #@i </label>
+                                                            <input id="card-number" type="text" class="form-control"
+                                                                   placeholder="Passenger Name"
+                                                                   name=@passenger_name
+                                                                   minlength="5" maxlength="20" required />
+                                                        </div>
+                                                    }
+                                                    @for (int i = 1; i <= order.premium_seats; i++)
+                                                    {
+                                                        passenger_name = @order.current_flight.flight_identifier + "-P#" + i;
+                                                        <div class="form-group col-sm-8">
+                                                            <label for="passenger-name">Premium Class seat #@i </label>
+                                                            <input id="card-number" type="text" class="form-control"
+                                                                   placeholder="Passenger Name"
+                                                                   name=@passenger_name
+                                                                   minlength="5" maxlength="20" required />
+                                                        </div>
+                                                    }
+                                                    <div style="position:absolute; top: -2px; right:43px;">
+                                                        <a title="REMOVE PRODUCT" style="color:red; font-size:20px;"
+                                                           href=@Url.Action("remove_item", "order", new { seq = index.ToString()})
+                                                           method="post">Remove</a>
+                                                    </div>
+                                                </div>
+                                                index++;
+                                            }
+                                        }
+                                    <a title="return to home page" style="color: #007bff; font-size: 20px; "
+                                       href=@Url.Action("index", "home")
+                                       method="post">Forget something? Return to home page</a>
+                                    </div>
+
+                                    <div class="card-details">
+                                        <h3 class="title">Credit Card Details &#128179;</h3>
+                                        <div class="row">
+                                            @{
+                                                Project___Intro_To_Computer_Networking.Models.cls_user currentUser = (Project___Intro_To_Computer_Networking.Models.cls_user)Session["currentUser"];
+                                                Project___Intro_To_Computer_Networking.Models.cls_creditCard usercard = null;
+                                                if (currentUser != null)
+                                                {
+                                                    usercard = new Project___Intro_To_Computer_Networking.Dal.clsCreditCardsDal().cards.
+                                                        ToList<Project___Intro_To_Computer_Networking.Models.cls_creditCard>()
+                                                        .Find(x => x.email.Equals(currentUser.email));
+                                                }
+                                            }
+                                            @if (currentUser != null)
+                                            {<input type="text" value="@currentUser.email" name="UI_CardEmail" style="display:none;" />}
+
+                                            @if (usercard != null)
+                                            {
+                                                <div class="form-group col-sm-7">
+                                                    <label for="passenger-name">Card Holder ID</label>
+                                                    <input id="card-number" type="text" class="form-control"
+                                                           placeholder="Card Holder ID"
+                                                           pattern="^[0-9]{8,9}$"
+                                                           required
+                                                           value="@usercard.card_holder_id"
+                                                           name="UI_CardHolderID"/>
+                                                </div>
+                                                <div class="form-group col-sm-7">
+                                                    <label for="card-number">Card Holder Name</label>
+                                                    <input id="card-number"
+                                                           type="text"
+                                                           class="form-control"
+                                                           placeholder="Card Holder"
+                                                           aria-label="Card Holder"
+                                                           aria-describedby="basic-addon1"
+                                                           value="@usercard.card_holder_name"
+                                                           required
+                                                           min="5"
+                                                           max="45"
+                                                           pattern="^(?<firstchar>[A-Za-z])((?<alphachars>[A-Za-z])|(?<specialchars>[A-Za-z]['-][A-Za-z])|(?<spaces> [A-Za-z]))*$" 
+                                                           title="Invalid Person Name"
+                                                           name="UI_CardHolderName"/>
+                                                </div>
+                                                <div class="form-group col-sm-5" style="padding-left: 105px;padding-right: 85px;">
+                                                    <label for="">Expiration Date</label>
+                                                    <div class="input-group expiration-date">
+                                                        <select class="form-control"
+                                                                name="UI_CardExpirationDateM">
+                                                            @for (int i = 1; i <= 12; i++)
+                                                            {
+                                                                if (usercard.expiration_date.Month == i)
+                                                                {
+                                                                    <option value="@i" selected>@i</option>
+                                                                }
+                                                                else
+                                                                {
+                                                                    <option value="@i">@i</option>
+                                                                }
+                                                            }
+                                                        </select>
+                                                        <select class="form-control"
+                                                                name="UI_CardExpirationDateY">
+                                                            @{int year = DateTime.Now.Year;}
+                                                            @for (int j = 0; j < 7; j++)
+                                                            {
+                                                                int jyear = year + j;
+                                                                if (jyear == usercard.expiration_date.Year)
+                                                                {
+                                                                    <option value="@jyear" selected>@jyear</option>
+                                                                }
+                                                                else
+                                                                {
+                                                                    <option value="@jyear">@jyear</option>
+                                                                }
+                                                            }
+                                                        </select>
+                                                    </div>
+                                                </div>
+                                                <div class="form-group col-sm-8">
+                                                    <label for="card-number">Card Number</label>
+                                                    <input id="card-number"
+                                                           type="text"
+                                                           name="UI_CardNumber"
+                                                           class="form-control"
+                                                           placeholder="Card Number"
+                                                           aria-label="Card Holder"
+                                                           aria-describedby="basic-addon1"
+                                                           pattern="(^4[0-9]{12}(?:[0-9]{3})?$)|(^(?:5[1-5][0-9]{2}|222[1-9]|22[3-9][0-9]|2[3-6][0-9]{2}|27[01][0-9]|2720)[0-9]{12}$)|(3[47][0-9]{13})|(^3(?:0[0-5]|[68][0-9])[0-9]{11}$)|(^6(?:011|5[0-9]{2})[0-9]{12}$)|(^(?:2131|1800|35\d{3})\d{11}$)"
+                                                           required
+                                                           title="Invalid Card Number
+                                                           Accept Only: Visa Card, Visa Master Card And Mastercard"
+                                                           value="@usercard.card_number" />
+                                                </div>
+                                                <div class="form-group col-sm-4" style="padding-right: 210px;">
+                                                    <label for="cvc">CVC</label>
+                                                    <input id="cvc"
+                                                           type="text"
+                                                           class="form-control"
+                                                           placeholder="CVC"
+                                                           aria-label="Card Holder"
+                                                           aria-describedby="basic-addon1"
+                                                           pattern="^[0-9]{3,4}$"
+                                                           required
+                                                           value="@usercard.card_CVC"
+                                                           name="UI_CardCVC"/>
+                                                </div>
+                                            }
+                                            else
+                                            {
+                                                <div class="form-group col-sm-7">
+                                                    <label for="passenger-name">Card Holder ID</label>
+                                                    <input id="card-number" type="text" class="form-control"
+                                                           placeholder="Card Holder ID"
+                                                           pattern="^[0-9]{8,9}$"
+                                                           required
+                                                           name="UI_CardHolderID" />
+                                                </div>
+                                                <div class="form-group col-sm-7">
+                                                    <label for="card-number">Card Holder Name</label>
+                                                    <input id="card-number"
+                                                           type="text"
+                                                           class="form-control"
+                                                           placeholder="Card Holder"
+                                                           aria-label="Card Holder"
+                                                           aria-describedby="basic-addon1"
+                                                           required
+                                                           min="5"
+                                                           max="45"
+                                                           pattern="^(?<firstchar>[A-Za-z])((?<alphachars>[A-Za-z])|(?<specialchars>[A-Za-z]['-][A-Za-z])|(?<spaces> [A-Za-z]))*$"
+                                                           title="Invalid Person Name"
+                                                           name="UI_CardHolderName" />
+                                                </div>
+                                                <div class="form-group col-sm-5" style="padding-left: 105px;padding-right: 85px;">
+                                                    <label for="">Expiration Date</label>
+                                                    <div class="input-group expiration-date">
+                                                        <select class="form-control"
+                                                                name="UI_CardExpirationDateM">
+                                                            @for (int i = 1; i <= 12; i++)
+                                                            {
+                                                                <option value="@i">@i</option>
+                                                            }
+                                                        </select>
+                                                        <select class="form-control"
+                                                                name="UI_CardExpirationDateY">
+                                                            @{int year = DateTime.Now.Year;}
+                                                            @for (int j = 0; j < 7; j++)
+                                                            {
+                                                                int jyear = year + j;
+                                                                <option value="@jyear">@jyear</option>
+                                                            }
+                                                        </select>
+                                                    </div>
+                                                </div>
+                                                <div class="form-group col-sm-8">
+                                                    <label for="card-number">Card Number</label>
+                                                    <input id="card-number"
+                                                           name="UI_CardNumber"
+                                                           type="text"
+                                                           class="form-control"
+                                                           placeholder="Card Number"
+                                                           aria-label="Card Holder"
+                                                           aria-describedby="basic-addon1"
+                                                           required
+                                                            pattern="(^4[0-9]{12}(?:[0-9]{3})?$)|(^(?:5[1-5][0-9]{2}|222[1-9]|22[3-9][0-9]|2[3-6][0-9]{2}|27[01][0-9]|2720)[0-9]{12}$)|(3[47][0-9]{13})|(^3(?:0[0-5]|[68][0-9])[0-9]{11}$)|(^6(?:011|5[0-9]{2})[0-9]{12}$)|(^(?:2131|1800|35\d{3})\d{11}$)"
+                                                           title="Invalid Card Number
+                                                           Accept Only: Visa Card, Visa Master Card And Mastercard" />
+                                                </div>
+                                                <div class="form-group col-sm-4" style="padding-right: 210px;">
+                                                    <label for="cvc">CVC</label>
+                                                    <input id="cvc" type="text" class="form-control" placeholder="CVC" aria-label="Card Holder" aria-describedby="basic-addon1"
+                                                           name="UI_CardCVC"
+                                                           pattern="^[0-9]{3,4}$"/>
+                                                </div>
+                                            }
+
+                                            @{
+                                                if (currentUser != null && usercard == null)
+                                                {
+                                                    <div>
+                                                        <input type="checkbox" name="CB_SaveCardDetails" /> <label>Save my credit card details for future purchases</label>
+                                                    </div>
+                                                }
+                                            }
+                                            <div class="form-group col-sm-12">
+                                                <button type="submit" class="btn btn-primary btn-block">Proceed</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                        </form>
+                    }
+                }
+            </div>
+        </section>
+    </main>
+</body>
+</html>

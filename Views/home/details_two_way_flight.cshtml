@@ -1,0 +1,272 @@
+﻿@model Project___Intro_To_Computer_Networking.Models.cls_twoWayFlight
+
+@{
+    ViewBag.Title = "details_two_way_flight";
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>Details</title>
+    <script>
+        window.onload = function () {
+            console.log("onload()");
+            var number_element_economy_D = document.getElementById("IV_DepartureEconomyAmount");
+            var number_element_business_D = document.getElementById("IV_DepartureBusinessAmount");
+            var number_element_premium_D = document.getElementById("IV_DeparturePremiumAmount");
+
+            var number_element_economy_R = document.getElementById("IV_ReturnEconomyAmount");
+            var number_element_business_R = document.getElementById("IV_ReturnBusinessAmount");
+            var number_element_premium_R = document.getElementById("IV_ReturnPremiumAmount");
+
+
+
+            if (number_element_economy_D != null)
+                number_element_economy_D.addEventListener('input', myFuncA);
+            if (number_element_business_D != null)
+                number_element_business_D.addEventListener('input', myFuncA);
+            if (number_element_premium_D != null)
+                number_element_premium_D.addEventListener('input', myFuncA);
+
+
+            if (number_element_economy_R != null)
+                number_element_economy_R.addEventListener('input', myFuncB);
+            if (number_element_premium_R != null)
+                number_element_premium_R.addEventListener('input', myFuncB);
+            if (number_element_business_R != null)
+                number_element_business_R.addEventListener('input', myFuncB);
+        }
+
+        function IsZeroDeparture() {
+            var number_element_economy = document.getElementById("IV_DepartureEconomyAmount");
+            var number_element_business = document.getElementById("IV_DepartureBusinessAmount");
+            var number_element_premium = document.getElementById("IV_DeparturePremiumAmount");
+            var sum = 0;
+
+            if (number_element_economy != null)
+                sum += number_element_economy.value;
+            if (number_element_business != null)
+                sum += number_element_business.value;
+            if (number_element_premium != null)
+                sum += number_element_premium.value;
+
+            if (sum == 0) {
+                return true;
+            }
+            return false;
+        }
+
+        function IsZeroReturn() {
+            var number_element_economy = document.getElementById("IV_ReturnEconomyAmount");
+            var number_element_premium = document.getElementById("IV_ReturnBusinessAmount");
+            var number_element_business = document.getElementById("IV_ReturnPremiumAmount");
+            var sum = 0;
+
+            if (number_element_economy != null)
+                sum += number_element_economy.value;
+            if (number_element_business != null)
+                sum += number_element_business.value;
+            if (number_element_premium != null)
+                sum += number_element_premium.value;
+
+            if (sum == 0) {
+                return true;
+            }
+            return false;
+        }
+
+        function myFuncA() {
+            var submit_button = document.getElementById("submit");
+            if (IsZeroDeparture()) {
+                submit_button.innerHTML = "YOU MUST CHOOSE NUMBER OF SEATS!";
+                submit_button.disabled = true;
+                submit_button.style.backgroundColor = "red";
+            }
+            else {
+                if (IsZeroReturn()) {
+                    return;
+                }
+                else {
+                    submit_button.innerHTML = "Add To Cart";
+                    submit_button.disabled = false;
+                    submit_button.style.backgroundColor = "#007bff";
+                }
+            }
+        }
+
+        function myFuncB() {
+            var submit_button = document.getElementById("submit");
+            if (IsZeroReturn()) {
+                submit_button.innerHTML = "YOU MUST CHOOSE NUMBER OF SEATS!";
+                submit_button.disabled = true;
+                submit_button.style.backgroundColor = "red";
+            }
+            else {
+                if (IsZeroDeparture()) {
+                    
+                }
+                else {
+                    submit_button.innerHTML = "Add To Cart";
+                    submit_button.disabled = false;
+                    submit_button.style.backgroundColor = "#007bff";
+                }
+            }
+        }
+
+    </script>
+    <script src="~/Scripts/jquery-3.4.1.js"></script>
+    <script src="~/Scripts/jquery.validate.js"></script>
+    <script src="~/Scripts/jquery.validate.unobtrusive.js"></script>
+    <link href="https://fonts.googleapis.com/css?family=Montserrat" rel="stylesheet">
+    <link rel="stylesheet" href="~/Styles/authenticate.css">
+    <link rel="stylesheet" href="~/Styles/boots.css">
+
+</head>
+<body>
+    <main class="page payment-page">
+        <section class="payment-form dark">
+            <div class="container">
+                <div class="card-details">
+                    <div style="display: grid; grid-template-columns: auto auto; margin-left:110px;">
+                        <div class="block-heading" style="display:inline-block;">
+                            <h2 style="margin-left: 13px; text-align: left; ">Departure Flight:</h2>
+                            <p style="text-align:left;">
+                                Flight N: @Model.DepartureFlight.flight_identifier <br />
+                                From: @Model.DepartureFlight.departure_country \ @Model.DepartureFlight.departure_airport <br />
+                                To: @Model.DepartureFlight.landing_country \ @Model.DepartureFlight.landing_airport<br />
+                                At: @Model.DepartureFlight.get_date()
+                            </p>
+                        </div>
+                        <div class="block-heading">
+                            <h2 style="margin-left: 24px; text-align: left;">Return Flight:</h2>
+                            <p style="text-align:left;">
+                                Flight N: @Model.ReturnFlight.flight_identifier <br />
+                                From: @Model.ReturnFlight.departure_country \ @Model.ReturnFlight.departure_airport <br />
+                                To: @Model.ReturnFlight.landing_country \ @Model.ReturnFlight.landing_airport<br />
+                                At: @Model.ReturnFlight.get_date()
+                            </p>
+                        </div>
+                    </div>
+                    <form action=@Url.Action("place_order", "order", new { pk = Model.DepartureFlight.flight_identifier + "&" + Model.ReturnFlight.flight_identifier}) , method="post">
+                        <div class="products" style="margin-left: -60px;margin-right: -60px;">
+                            <h3 class="title">
+                                Passenger Amount:
+                            </h3>
+                            @{
+                                <h2 class="title">
+                                    Departure Flight:
+                                </h2>
+                                <p>
+                                    Flight Details:<br />
+                                    <span>
+                                        N. : @Model.DepartureFlight.flight_identifier<br />
+                                        FROM: @Model.DepartureFlight.departure_country\@Model.DepartureFlight.departure_airport<br />
+                                        TO: @Model.DepartureFlight.landing_country\@Model.DepartureFlight.landing_airport<br />
+                                        AT: @Model.DepartureFlight.departure_time.ToString("R")<br />
+                                    </span>
+                                </p>
+                                if (Model.DepartureFlight.remain_economy_seats > 0)
+                                {
+                                    <div class="item">
+                                        <label>Economy Class Seats:</label><br />
+                                        <p class="item-name">Price per seat: &#8362;@Model.DepartureFlight.economy_seat_price</p>
+                                        <p class="item-name">
+                                            Number of seats:
+                                            <input id="IV_DepartureEconomyAmount"
+                                                   name="IV_DepartureEconomyAmount" type="number" min="0" max="@Model.DepartureFlight.remain_economy_seats" value="1" style="padding-top: 2px;padding-bottom: 2px;margin-left: 10px;padding-left: 10px;padding-right: 0px;"><br />
+                                        </p>
+                                    </div>
+                                }
+                                if (Model.DepartureFlight.remain_business_seats > 0)
+                                {
+                                    <br />
+                                    <div class="item">
+                                        <label>Business Class Seats:</label><br />
+                                        <p class="item-name">Price per seat: &#8362;@Model.DepartureFlight.business_seat_price</p>
+                                        <p class="item-name">
+                                            Number of seats:
+                                            <input id="IV_DepartureBusinessAmount"
+                                                   name="IV_DepartureBusinessAmount" type="number" min="0" max="@Model.DepartureFlight.remain_business_seats" value="0" style="padding-top: 2px;padding-bottom: 2px;margin-left: 10px;padding-left: 10px;padding-right: 0px;"><br />
+                                        </p>
+                                    </div>
+                                }
+                                if (Model.ReturnFlight.remain_premium_seats > 0)
+                                {
+                                    <br />
+                                    <div class="item">
+                                        <label>Premium Class Seats:</label><br />
+                                        <p class="item-name">Price per seat: &#8362;@Model.DepartureFlight.premium_seat_price</p>
+                                        <p class="item-name">
+                                            Number of seats:
+                                            <input id="IV_DeparturePremiumAmount"
+                                                   name="IV_DeparturePremiumAmount" type="number" min="0" max="@Model.DepartureFlight.remain_premium_seats" value="0" style="padding-top: 2px;padding-bottom: 2px;margin-left: 10px;padding-left: 10px;padding-right: 0px;"><br />
+                                        </p>
+                                    </div>
+                                }
+                                <br />
+                                <h2 class="title">
+                                    Return Flight:
+                                </h2>
+                                <p>
+                                    Flight Details:<br />
+                                    <span>
+                                        N. : @Model.ReturnFlight.flight_identifier<br />
+                                        FROM: @Model.ReturnFlight.departure_country\@Model.ReturnFlight.departure_airport<br />
+                                        TO: @Model.ReturnFlight.landing_country\@Model.ReturnFlight.landing_airport<br />
+                                        AT: @Model.ReturnFlight.departure_time.ToString("R")<br />
+                                    </span>
+                                </p>
+                                if (Model.ReturnFlight.remain_economy_seats > 0)
+                                {
+                                    <div class="item">
+                                        <label>Economy Class Seats:</label><br />
+                                        <p class="item-name">Price per seat: &#8362;@Model.ReturnFlight.economy_seat_price</p>
+                                        <p class="item-name">
+                                            Number of seats:
+                                            <input id="IV_ReturnEconomyAmount"
+                                                   name="IV_ReturnEconomyAmount" type="number" min="0" max="@Model.ReturnFlight.remain_economy_seats" value="1" style="padding-top: 2px;padding-bottom: 2px;margin-left: 10px;padding-left: 10px;padding-right: 0px;"><br />
+                                        </p>
+                                    </div>
+                                }
+                                if (Model.ReturnFlight.remain_business_seats > 0)
+                                {
+                                    <br />
+                                    <div class="item">
+                                        <label>Business Class Seats:</label><br />
+                                        <p class="item-name">Price per seat: &#8362;@Model.ReturnFlight.business_seat_price</p>
+                                        <p class="item-name">
+                                            Number of seats:
+                                            <input id="IV_ReturnBusinessAmount"
+                                                   name="IV_ReturnBusinessAmount" type="number" min="0" max="@Model.ReturnFlight.remain_business_seats" value="0" style="padding-top: 2px;padding-bottom: 2px;margin-left: 10px;padding-left: 10px;padding-right: 0px;"><br />
+                                        </p>
+                                    </div>
+                                }
+                                if (Model.ReturnFlight.remain_premium_seats > 0)
+                                {
+                                    <br />
+                                    <div class="item">
+                                        <label>Premium Class Seats:</label><br />
+                                        <p class="item-name">Price per seat: &#8362;@Model.ReturnFlight.premium_seat_price</p>
+                                        <p class="item-name">
+                                            Number of seats:
+                                            <input id="IV_ReturnPremiumAmount"
+                                                   name="IV_ReturnPremiumAmount" type="number" min="0" max="@Model.ReturnFlight.remain_premium_seats" value="0" style="padding-top: 2px;padding-bottom: 2px;margin-left: 10px;padding-left: 10px;padding-right: 0px;"><br />
+                                        </p>
+                                    </div>
+                                }
+                            }
+                            <div class="form-group col-sm-12">
+                                <button id="submit" type="submit" class="btn btn-primary btn-block">ADD TO CART</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                </div>
+</section>
+    </main>
+
+</body>
+</html>
+

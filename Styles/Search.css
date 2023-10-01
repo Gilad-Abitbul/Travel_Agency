@@ -1,0 +1,144 @@
+﻿html {
+    background-image: url(https://groupsource.com/wp-content/uploads/2015/07/airplane-sky4.jpg);
+    margin: auto;
+    border: solid 1px #2f7fad;
+    width: 80%;
+    padding-left: 20px !important;
+    padding-bottom: 10px !important;
+    padding-right: 20px !important;
+    padding-top: 0px !important;
+}
+
+body {
+    font-family: sans-serif;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: 80%;
+}
+
+
+
+
+
+form {
+    width: 90%;
+    position: relative;
+}
+
+.card-title {
+    margin: auto;
+    padding: 15px;
+    background-color: #2f7fad;
+    color: white;
+    width: 90%;
+}
+
+
+fieldset {
+    border: none;
+}
+
+.radio-group label {
+    padding-right: 75px;
+}
+
+.from-place, .to-place, .airline-name {
+    width: 90%;
+    height: 36px;
+    padding: 2px 8px;
+    border: 1px solid #dcdcdc;
+    outline: none;
+}
+
+.group-field label {
+    display: flex;
+    flex-wrap: wrap;
+    padding: 10px 0;
+}
+
+fieldset div {
+    display: inline-block;
+    padding: 10px 10px;
+    float: left;
+}
+
+.group-field {
+    width: 350px;
+    height: auto;
+}
+
+.group-select-field {
+    width: 175px;
+    height: auto;
+}
+
+    .group-select-field label {
+        display: block;
+        padding: 10px 0px;
+    }
+
+
+
+.search-btn {
+    float: right;
+    padding: 10px 22px;
+    border-radius: 6px;
+    outline: none;
+    font-weight: bold;
+    background: #2f7cff;
+    color: white;
+    border: none;
+    margin-top: 0px;
+}
+
+.place-swap-btn {
+    background: #e7edf3;
+    border: none;
+    font-size: 32px;
+    cursor: pointer;
+}
+
+.more-link {
+    color: #4071e8;
+    outline: none;
+}
+
+select {
+    border: 1px solid #dcdcdc;
+    background: #e7edf3;
+    outline: none;
+}
+
+.bold-type {
+    font-weight: bold;
+}
+
+::placeholder {
+    color: #999999;
+}
+
+.label-hint {
+    color: #999999;
+}
+
+input[type="date"] {
+    background: #fff url(https://cdn1.iconfinder.com/data/icons/cc_mono_icon_set/blacks/16x16/calendar_2.png) 95% 50% no-repeat;
+    height: 36px;
+    border: 1px solid #dcdcdc;
+    outline: none;
+}
+
+    input[type="date"]::-webkit-inner-spin-button {
+        display: none;
+    }
+
+    input[type="date"]::-webkit-calendar-picker-indicator {
+        opacity: 0;
+    }
+
+.more-option {
+    border-bottom: 1px dotted #dcdcdc;
+    padding-bottom: 20px;
+}

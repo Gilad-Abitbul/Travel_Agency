@@ -1,0 +1,133 @@
+﻿@model Project___Intro_To_Computer_Networking.Models.cls_flight
+
+@{
+    ViewBag.Title = "details";
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>Details</title>
+    <script src="~/Scripts/jquery-3.4.1.js"></script>
+    <script src="~/Scripts/jquery.validate.js"></script>
+    <script src="~/Scripts/jquery.validate.unobtrusive.js"></script>
+    <link href="https://fonts.googleapis.com/css?family=Montserrat" rel="stylesheet">
+    <link rel="stylesheet" href="~/Styles/authenticate.css">
+    <link rel="stylesheet" href="~/Styles/boots.css">
+
+    <script>
+        window.onload = function () {
+
+            const number_element_economy = document.getElementById("IV_DepartureEconomyAmount");
+            const number_element_business = document.getElementById("IV_DepartureBusinessAmount");
+            const number_element_premium = document.getElementById("IV_DeparturePremiumAmount");
+            const submit_button = document.getElementById("submit");
+            if (number_element_economy != null)
+                number_element_economy.addEventListener('input', myFunc);
+            if (number_element_business != null)
+                number_element_business.addEventListener('input', myFunc);
+            if (number_element_premium != null)
+                number_element_premium.addEventListener('input', myFunc);
+        }
+
+        function myFunc() {
+            var sum = 0;
+            const number_element_economy = document.getElementById("IV_DepartureEconomyAmount");
+            const number_element_business = document.getElementById("IV_DepartureBusinessAmount");
+            const number_element_premium = document.getElementById("IV_DeparturePremiumAmount");
+            const submit_button = document.getElementById("submit");
+            if (number_element_economy != null)
+                sum += number_element_economy.value;
+            if (number_element_business != null)
+                sum += number_element_business.value;
+            if (number_element_premium != null)
+                sum += number_element_premium.value;
+
+            if (sum == 0) {
+                submit_button.innerHTML = "YOU MUST CHOOSE NUMBER OF SEATS!";
+                submit_button.disabled = true;
+                submit_button.style.backgroundColor ="red";
+            }
+            else {
+                submit_button.innerHTML = "Add To Cart";
+                submit_button.disabled = false;
+                submit_button.style.backgroundColor ="#007bff";
+            }
+        }
+
+    </script>
+</head>
+<body>
+    <main class="page payment-page">
+        <section class="payment-form dark">
+            <div class="container">
+                <div class="card-details">
+                        <div class="block-heading">
+                            <h2>Departure Flight:</h2>
+                            <p>
+                                Flight N: @Model.flight_identifier <br />
+                                From: @Model.departure_country \ @Model.departure_airport <br />
+                                To: @Model.landing_country \ @Model.landing_airport<br />
+                                At: @Model.get_date()
+                            </p>
+                        </div>
+                    <form action=@Url.Action("place_order", "order", new { pk = Model.flight_identifier}) , method="post">
+                        <div class="products" style="margin-left: -60px;margin-right: -60px;">
+                            <h3 class="title">
+                                Passenger Amount:
+                            </h3>
+                            @{ 
+                                if (Model.remain_economy_seats > 0)
+                                {
+                                    <div class="item">
+                                        <label>Economy Class Seats:</label><br />
+                                        <p class="item-name">Price per seat: &#8362;@Model.economy_seat_price</p>
+                                        <p class="item-name">
+                                            Number of seats:
+                                            <input id="IV_DepartureEconomyAmount"
+                                                   name="IV_DepartureEconomyAmount" onchange="myFunc()" type="number" min="0" max="@Model.remain_economy_seats" value="1" style="padding-top: 2px;padding-bottom: 2px;margin-left: 10px;padding-left: 10px;padding-right: 0px;"><br />
+                                        </p>
+                                    </div>
+                                }
+                                if (Model.remain_business_seats > 0)
+                                {
+                                    <br />
+                                    <div class="item">
+                                        <label>Business Class Seats:</label><br />
+                                        <p class="item-name">Price per seat: &#8362;@Model.business_seat_price</p>
+                                        <p class="item-name">
+                                            Number of seats:
+                                            <input id="IV_DepartureBusinessAmount"
+                                                   name="IV_DepartureBusinessAmount" oncuechange="myFunc()" type="number" min="0" max="@Model.remain_business_seats" value="0" style="padding-top: 2px;padding-bottom: 2px;margin-left: 10px;padding-left: 10px;padding-right: 0px;"><br />
+                                        </p>
+                                    </div>
+                                }
+                                if (Model.remain_premium_seats > 0)
+                                {
+                                    <br />
+                                    <div class="item">
+                                        <label>Premium Class Seats:</label><br />
+                                        <p class="item-name">Price per seat: &#8362;@Model.premium_seat_price</p>
+                                        <p class="item-name">
+                                            Number of seats:
+                                            <input id="IV_DeparturePremiumAmount"
+                                                   name="IV_DeparturePremiumAmount" onchange="myFunc()" type="number" min="0" max="@Model.remain_premium_seats" value="0" style="padding-top: 2px;padding-bottom: 2px;margin-left: 10px;padding-left: 10px;padding-right: 0px;"><br />
+                                        </p>
+                                    </div>
+                                }
+                                <br />
+                            }
+                            <div class="form-group col-sm-12">
+                                <button id="submit" type="submit" class="btn btn-primary btn-block">ADD TO CART</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </section>
+    </main>
+
+</body>
+</html>

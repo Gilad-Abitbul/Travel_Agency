@@ -1,0 +1,69 @@
+﻿@model Project___Intro_To_Computer_Networking.Models.cls_user
+
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>sign_up</title>
+    <script src="~/Scripts/jquery-3.4.1.js"></script>
+    <script src="~/Scripts/jquery.validate.js"></script>
+    <script src="~/Scripts/jquery.validate.unobtrusive.js"></script>
+    <link href="https://fonts.googleapis.com/css?family=Montserrat" rel="stylesheet">
+    <link rel="stylesheet" href="~/Styles/authenticate.css">
+    <link rel="stylesheet" href="~/Styles/boots.css">
+</head>
+<body>
+    <main class="page payment-page">
+        <section class="payment-form dark">
+            <div class="container">
+                <div class="block-heading">
+                    <h2>Sign Up Today</h2>
+                    <p>
+                        Plan Your Next Trip
+                    </p>
+                </div>
+                <div>
+                    @using (Html.BeginForm("submit", "authenticate", FormMethod.Post, new { autocomplete = "off" }) )
+                    {
+                        <div class="card-details">
+                            <div class="row">
+                                <div class="form-group col-sm-12">
+                                    <label>First Name:</label>
+                                    @Html.TextBoxFor(x => x.firstName, new { @class = "text-box" })
+                                    <span style="color:red;">@Html.ValidationMessageFor(x => x.firstName)</span>
+                                </div>
+                                <div class="form-group col-sm-12">
+                                    <label>Last Name:</label>
+                                    @Html.TextBoxFor(x => x.lastName, new { @class = "text-box" })
+                                    <span style="color:red;">@Html.ValidationMessageFor(x => x.lastName)</span>
+                                </div>
+                                <div class="form-group col-sm-12">
+                                    <label>Email:</label>
+                                    @Html.TextBoxFor(x => x.email, new { @class = "text-box" })
+                                    <span style="color:red;">@Html.ValidationMessageFor(x => x.email) @TempData["errorMsg"]</span>
+                                </div>
+                                <div class="form-group col-sm-12">
+                                    <label>Password:</label>
+                                    @Html.TextBoxFor(x => x.password, new { @class = "text-box" })
+                                    <span style="color:red;">@Html.ValidationMessageFor(x => x.password)</span>
+                                </div>
+                                <div class="form-group col-sm-12">
+                                    <button type="submit" class="btn btn-primary btn-block">Sign Up</button>
+                                </div>
+                                <a title="sign in" style="color: #007bff; font-size: 20px; "
+                                   href=@Url.Action("sign_in", "authenticate")
+                                   method="post">Already have an account? Sign in now</a>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+        </section>
+    </main>
+</body>
+</html>
